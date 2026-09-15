@@ -305,8 +305,8 @@ export default function Navbar() {
 
       {/* Full Multilingual Language Selector Modal / Dialog */}
       {langModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-[#0B1120] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto">
+          <div className="relative mt-3 sm:mt-6 w-full max-w-6xl max-h-[86vh] flex flex-col bg-[#0B1120] border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-slate-900 via-slate-900/90 to-emerald-950/30">
               <div className="flex items-center gap-3">
@@ -321,7 +321,7 @@ export default function Navbar() {
                     </span>
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Choose your native language. All words and letters across the platform will update instantly.
+                    Choose your language. The full website text will be translated automatically.
                   </p>
                 </div>
               </div>
@@ -365,7 +365,7 @@ export default function Navbar() {
             </div>
 
             {/* Languages Grid */}
-            <div className="p-3 sm:p-5 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+            <div className="p-3 sm:p-5 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3 min-h-0">
               {filteredLanguages.map((lang) => {
                 const isSelected = currentLanguage === lang.code;
                 return (

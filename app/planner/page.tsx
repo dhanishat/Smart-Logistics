@@ -45,9 +45,12 @@ export default function RoutePlannerPage() {
   const [sourceCity, setSourceCity] = useState<string>('guwahati');
   const [destCity, setDestCity] = useState<string>('silchar');
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
+  const hasLiveRoadData = roadSegments.some(
+    (segment) => segment.currentStatus !== 'safe' || segment.reportCount > 0 || segment.officialNotes
+  );
 
   // Compute dynamic routes
-  const routes = computeDynamicRoutes(sourceCity, destCity, selectedVehicle, roadSegments);
+  const routes = hasLiveRoadData ? computeDynamicRoutes(sourceCity, destCity, selectedVehicle, roadSegments) : [];
   const activeRoute = routes.find((r) => r.id === selectedRouteId) || routes.find((r) => r.isRecommended) || routes[0];
 
   const currentVehicle = VEHICLE_CATALOG.find((v) => v.type === selectedVehicle) || VEHICLE_CATALOG[4];
@@ -141,43 +144,15 @@ export default function RoutePlannerPage() {
           </div>
         </div>
 
-        {/* Quick Route Presets */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80 text-xs">
-          <span className="text-slate-400 font-semibold">Popular Strategic Logistics Corridors:</span>
-          <button
-            onClick={() => {
-              setSourceCity('guwahati');
-              setDestCity('silchar');
-              setSelectedVehicle('heavy_truck');
-            }}
-            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium"
-          >
-            Guwahati &rarr; Silchar (NH-6 Landslide Corridor)
-          </button>
-          <button
-            onClick={() => {
-              setSourceCity('siliguri');
-              setDestCity('gangtok');
-              setSelectedVehicle('bus');
-            }}
-            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium"
-          >
-            Siliguri &rarr; Gangtok (NH-10 Teesta Gorge)
-          </button>
-          <button
-            onClick={() => {
-              setSourceCity('guwahati');
-              setDestCity('tawang');
-              setSelectedVehicle('car');
-            }}
-            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium"
-          >
-            Guwahati &rarr; Tawang (Sela Tunnel / High Pass)
-          </button>
-        </div>
+        {!hasLiveRoadData && (
+          <div className="pt-2 border-t border-slate-800/80 text-xs text-slate-400">
+            Route alternatives will appear after a real hazard report or authority update is submitted.
+          </div>
+        )}
       </div>
 
       {/* Dynamic Recommendation Banner */}
+      {hasLiveRoadData && activeRoute ? (
       <div className="p-5 rounded-3xl bg-gradient-to-r from-emerald-950/50 via-teal-950/40 to-slate-900/80 border border-emerald-500/40 shadow-xl space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
           <div className="flex items-center gap-2">
@@ -195,8 +170,24 @@ export default function RoutePlannerPage() {
           {routes.find((r) => r.isRecommended)?.reasoning || activeRoute.reasoning}
         </p>
       </div>
+      ) : (
+        <div className="p-6 rounded-3xl bg-slate-900/70 border border-slate-800 text-center space-y-2">
+          <h3 className="text-lg font-extrabold text-white">No live route advisories yet</h3>
+          <p className="text-sm text-slate-400">
+            Submit a real road hazard report to calculate route alternatives for the selected vehicle.
+          </p>
+          <Link
+            href="/report"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-extrabold"
+          >
+            <AlertTriangle className="w-4 h-4" />
+            <span>Report Road Condition</span>
+          </Link>
+        </div>
+      )}
 
       {/* Multi-Route Comparison Cards */}
+      {hasLiveRoadData && activeRoute && (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-white">Calculated Route Alternatives</h3>
@@ -307,8 +298,10 @@ export default function RoutePlannerPage() {
           })}
         </div>
       </div>
+      )}
 
       {/* Selected Route Detailed Diagnostics & Elevation Profile */}
+      {hasLiveRoadData && activeRoute && (
       <div className="p-6 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
           <div>
@@ -371,6 +364,7 @@ export default function RoutePlannerPage() {
           </ul>
         </div>
       </div>
+      )}
     </div>
   );
 }
