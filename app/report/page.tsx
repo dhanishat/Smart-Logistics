@@ -20,7 +20,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { HazardType, SeverityLevel } from '@/lib/types';
-import { SAMPLE_HAZARD_PRESETS, VEHICLE_CATALOG } from '@/lib/neData';
+import { VEHICLE_CATALOG } from '@/lib/neData';
 import { useStore } from '@/lib/store';
 import { simulateAIImageAnalysis, AIClassificationResult } from '@/lib/aiEngine';
 import BoundingBoxCanvas from '@/components/BoundingBoxCanvas';
@@ -30,42 +30,21 @@ export default function DriverReportPage() {
   const { submitHazardReport, roadSegments, selectedVehicle } = useStore();
 
   // Form State
-  const [selectedPreset, setSelectedPreset] = useState<string>('preset-landslide-sonapur');
   const [hazardType, setHazardType] = useState<HazardType>('landslide');
-  const [segmentId, setSegmentId] = useState<string>('seg-nh6-sonapur');
-  const [description, setDescription] = useState<string>(
-    'Massive slope collapse after cloudburst near Sonapur tunnel. Boulders and thick mud covering 90% of the highway. Small bikes can edge through on the shoulder, but heavy trucks are completely stuck.'
-  );
-  const [reportedBy, setReportedBy] = useState<string>('Driver (Freight Logistics Express)');
-  const [customImageUrl, setCustomImageUrl] = useState<string>(
-    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=800'
-  );
+  const [segmentId, setSegmentId] = useState<string>('seg-nh6-jorabat-shillong');
+  const [description, setDescription] = useState<string>('');
+  const [reportedBy, setReportedBy] = useState<string>('');
+  const [customImageUrl, setCustomImageUrl] = useState<string>('');
 
   // GPS Simulation
-  const [gpsCoords, setGpsCoords] = useState<[number, number]>([25.109, 92.368]);
-  const [locationName, setLocationName] = useState<string>('NH-6 near Sonapur Tunnel, East Jaintia Hills, Meghalaya');
-  const [elevation, setElevation] = useState<number>(1380);
+  const [gpsCoords, setGpsCoords] = useState<[number, number]>([26.144, 91.736]);
+  const [locationName, setLocationName] = useState<string>('Location not attached yet');
+  const [elevation, setElevation] = useState<number>(0);
 
   // AI Scan State
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [aiResult, setAiResult] = useState<AIClassificationResult | null>(null);
   const [submittedReportId, setSubmittedReportId] = useState<string | null>(null);
-
-  // Apply Preset
-  const handlePresetSelect = (presetId: string) => {
-    const preset = SAMPLE_HAZARD_PRESETS.find((p) => p.id === presetId);
-    if (!preset) return;
-
-    setSelectedPreset(presetId);
-    setHazardType(preset.hazardType);
-    setSegmentId(preset.segmentId);
-    setDescription(preset.description);
-    setCustomImageUrl(preset.imageUrl);
-    setGpsCoords(preset.coords);
-    setLocationName(preset.locationDescription + ', ' + preset.state);
-    setAiResult(null);
-    setSubmittedReportId(null);
-  };
 
   // Trigger Simulated File Upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +52,6 @@ export default function DriverReportPage() {
     if (file) {
       const url = URL.createObjectURL(file);
       setCustomImageUrl(url);
-      setSelectedPreset('custom');
       setAiResult(null);
       setSubmittedReportId(null);
     }
@@ -150,32 +128,6 @@ export default function DriverReportPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Input Form & Camera */}
         <div className="lg:col-span-6 space-y-6">
-          {/* Preset Selector */}
-          <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-2.5">
-            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
-              Quick Test Hazard Presets (North East Scenarios):
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {SAMPLE_HAZARD_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  onClick={() => handlePresetSelect(preset.id)}
-                  className={`p-2.5 rounded-xl border text-left transition-all ${
-                    selectedPreset === preset.id
-                      ? 'bg-emerald-950/40 border-emerald-500/60 text-white shadow-sm'
-                      : 'bg-slate-950/40 border-slate-800 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <div className="text-xs font-bold text-white flex items-center justify-between">
-                    <span>{preset.hazardType.toUpperCase()}</span>
-                    <span className="text-[10px] font-mono text-emerald-400">{preset.highwayCode}</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 truncate mt-0.5">{preset.name}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Camera / Image Upload Area */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">

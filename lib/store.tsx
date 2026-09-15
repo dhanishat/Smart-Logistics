@@ -10,8 +10,6 @@ import {
   VehicleType,
 } from './types';
 import {
-  INITIAL_HAZARD_REPORTS,
-  INITIAL_PREDICTIVE_ALERTS,
   INITIAL_ROAD_SEGMENTS,
 } from './neData';
 import { evaluateVehicleAccessibility, simulateAIImageAnalysis } from './aiEngine';
@@ -52,12 +50,25 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | null>(null);
 
-const STORAGE_KEY = 'ne_roadsense_data_v2';
+const STORAGE_KEY = 'ne_roadsense_data_v3';
+const CLEAR_VEHICLE_ACCESS = evaluateVehicleAccessibility('road_damage', 0, 'safe');
+const CLEAN_ROAD_SEGMENTS: RoadSegment[] = INITIAL_ROAD_SEGMENTS.map((segment) => ({
+  ...segment,
+  currentStatus: 'safe',
+  currentHazard: undefined,
+  obstructionPercentage: 0,
+  lastReportTime: 'No reports yet',
+  reportCount: 0,
+  verified: false,
+  officialNotes: undefined,
+  weatherWarning: undefined,
+  vehicleAccess: CLEAR_VEHICLE_ACCESS,
+}));
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [roadSegments, setRoadSegments] = useState<RoadSegment[]>(INITIAL_ROAD_SEGMENTS);
-  const [hazardReports, setHazardReports] = useState<HazardReport[]>(INITIAL_HAZARD_REPORTS);
-  const [predictiveAlerts, setPredictiveAlerts] = useState<PredictiveAlert[]>(INITIAL_PREDICTIVE_ALERTS);
+  const [roadSegments, setRoadSegments] = useState<RoadSegment[]>(CLEAN_ROAD_SEGMENTS);
+  const [hazardReports, setHazardReports] = useState<HazardReport[]>([]);
+  const [predictiveAlerts, setPredictiveAlerts] = useState<PredictiveAlert[]>([]);
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleType>('heavy_truck');
   const [selectedSegmentId, setSelectedSegmentId] = useState<string | null>(null);
   const [activeDemoStep, setActiveDemoStep] = useState<number>(0);
@@ -129,7 +140,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       locationDescription: reportInput.locationDescription,
       hazardType: reportInput.hazardType,
       description: reportInput.description,
-      imageUrl: reportInput.imageUrl || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=800',
+      imageUrl: reportInput.imageUrl || undefined,
       aiConfidence: confidence,
       severity,
       obstructionPercentage: obstruction,
@@ -294,9 +305,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetAllData = () => {
-    setRoadSegments(INITIAL_ROAD_SEGMENTS);
-    setHazardReports(INITIAL_HAZARD_REPORTS);
-    setPredictiveAlerts(INITIAL_PREDICTIVE_ALERTS);
+    setRoadSegments(CLEAN_ROAD_SEGMENTS);
+    setHazardReports([]);
+    setPredictiveAlerts([]);
     setSelectedVehicle('heavy_truck');
     setActiveDemoStep(0);
     localStorage.removeItem(STORAGE_KEY);

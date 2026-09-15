@@ -18,7 +18,6 @@ import {
   Volume2,
   VolumeX,
   X,
-  Zap,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { VEHICLE_CATALOG } from '@/lib/neData';
@@ -32,8 +31,6 @@ export default function Navbar() {
     setSelectedVehicle,
     isAudioEnabled,
     setIsAudioEnabled,
-    activeDemoStep,
-    setActiveDemoStep,
   } = useStore();
 
   const { currentLanguage, setLanguage, t, languages, currentLanguageInfo } = useTranslation();
@@ -88,7 +85,7 @@ export default function Navbar() {
           <span className="truncate text-slate-400">
             {t(
               'telemetry.ribbon',
-              'NH-6 Sonapur Landslide (92% Blocked) • NH-10 Teesta River Collapse • Sela Pass Sub-zero Black Ice Warning • Kaziranga Flood Speed Limit 40 km/h'
+              'No live hazard reports yet. Submit verified road conditions to update the network.'
             )}
           </span>
         </div>
@@ -208,14 +205,6 @@ export default function Navbar() {
               {isAudioEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
             </button>
 
-            {/* Hackathon Demo Flow Trigger */}
-            <button
-              onClick={() => setActiveDemoStep(activeDemoStep > 0 ? 0 : 1)}
-              className="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white text-xs font-bold shadow-md shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0"
-            >
-              <Zap className="w-3.5 h-3.5 text-yellow-200 animate-bounce shrink-0" />
-              <span>{activeDemoStep > 0 ? `Step ${activeDemoStep}/6` : t('nav.demo', 'Interactive Demo')}</span>
-            </button>
           </div>
 
           {/* Mobile Menu & Language Button */}
@@ -227,13 +216,6 @@ export default function Navbar() {
             >
               <Globe className="w-4 h-4" />
               <span className="truncate max-w-[65px]">{currentLanguageInfo.nativeName}</span>
-            </button>
-
-            <button
-              onClick={() => setActiveDemoStep(activeDemoStep > 0 ? 0 : 1)}
-              className="px-2.5 py-1.5 rounded-lg bg-orange-500 text-white text-xs font-bold whitespace-nowrap"
-            >
-              Demo
             </button>
 
             <button

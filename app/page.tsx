@@ -23,7 +23,6 @@ import {
   ShieldCheck,
   Sparkles,
   Truck,
-  Zap,
 } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { VEHICLE_CATALOG } from '@/lib/neData';
@@ -31,7 +30,7 @@ import VehicleAccessTable from '@/components/VehicleAccessTable';
 import { useTranslation } from '@/lib/i18n';
 
 export default function HomePage() {
-  const { stats, roadSegments, hazardReports, selectedVehicle, setSelectedVehicle, setActiveDemoStep } = useStore();
+  const { stats, roadSegments, hazardReports, selectedVehicle, setSelectedVehicle } = useStore();
   const { t } = useTranslation();
 
   const activeReports = hazardReports.slice(0, 3);
@@ -98,13 +97,6 @@ export default function HomePage() {
               <span>{t('hero.btnPlanner', 'Route Planner')}</span>
             </Link>
 
-            <button
-              onClick={() => setActiveDemoStep(1)}
-              className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 font-bold text-sm transition-all flex items-center gap-2"
-            >
-              <Zap className="w-4 h-4 text-amber-400" />
-              <span>{t('hero.btnDemo', 'Interactive Demo Flow')}</span>
-            </button>
           </div>
         </div>
       </section>
@@ -192,16 +184,16 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Live Sonapur Segment Sample Table */}
+        {/* Current Vehicle Accessibility Table */}
         <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded-md bg-red-500/20 text-red-400 border border-red-500/40 text-xs font-mono font-bold">
-                NH-6 CRITICAL ALERT
+              <span className="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-mono font-bold">
+                {roadSegments[0].highwayCode} STATUS
               </span>
-              <span className="text-sm font-bold text-white">Sonapur Tunnel Landslide &amp; Lubha River Silt Flow</span>
+              <span className="text-sm font-bold text-white">{roadSegments[0].name}</span>
             </div>
-            <span className="text-xs text-slate-400">92% Road Obstruction</span>
+            <span className="text-xs text-slate-400">{roadSegments[0].obstructionPercentage}% Road Obstruction</span>
           </div>
 
           <VehicleAccessTable matrix={roadSegments[0].vehicleAccess} highlightSelected />

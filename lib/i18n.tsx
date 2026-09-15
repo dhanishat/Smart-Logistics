@@ -32,6 +32,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('lang', currentLanguage);
+    document.documentElement.setAttribute('data-language', currentLanguage);
+  }, [currentLanguage]);
+
   const currentLanguageInfo = useMemo(() => {
     return SUPPORTED_LANGUAGES.find((l) => l.code === currentLanguage) || SUPPORTED_LANGUAGES[0];
   }, [currentLanguage]);
@@ -47,8 +52,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     try {
       localStorage.setItem(STORAGE_LANG_KEY, langCode);
-      document.documentElement.setAttribute('lang', langCode);
-      document.documentElement.setAttribute('data-language', langCode);
     } catch (e) {
       console.warn('Could not save language to localStorage', e);
     }

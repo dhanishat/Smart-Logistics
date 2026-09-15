@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Cpu, Scan, ShieldCheck } from 'lucide-react';
+import { Cpu, ImagePlus, Scan, ShieldCheck } from 'lucide-react';
 
 interface BoundingBox {
   label: string;
@@ -50,13 +50,23 @@ export default function BoundingBoxCanvas({
   return (
     <div className="relative w-full h-72 sm:h-80 md:h-96 rounded-2xl overflow-hidden border border-slate-700 bg-black shadow-2xl group">
       {/* Background Image */}
-      <img
-        src={imageUrl}
-        alt="Road Hazard Scene"
-        className={`w-full h-full object-cover transition-transform duration-700 ${
-          isScanning ? 'scale-105 filter contrast-125' : 'group-hover:scale-102'
-        }`}
-      />
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt="Road Hazard Scene"
+          className={`w-full h-full object-cover transition-transform duration-700 ${
+            isScanning ? 'scale-105 filter contrast-125' : 'group-hover:scale-102'
+          }`}
+        />
+      ) : (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 text-slate-400 gap-3">
+          <ImagePlus className="w-12 h-12 text-emerald-400/70" />
+          <div className="text-center">
+            <p className="text-sm font-bold text-slate-200">Upload a road image</p>
+            <p className="text-xs text-slate-500">The scanner will analyze your selected photo.</p>
+          </div>
+        </div>
+      )}
 
       {/* High-tech Scanning Grid Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#090D16]/90 via-transparent to-black/40 pointer-events-none" />
